@@ -24,95 +24,39 @@ api_secret='21b12401'
 client = Cryptomarket::Client.new apiKey:apiKey, apiSecret:apiSecret
 
 # get currencies
-currencies = client.getCurrencies()
+currencies = client.get_currencies
 
 # get order books
-order_book = client.getOrderbook('EOSETH')
+order_book = client.get_orderbooks symbols:['EOSETH']
 
 # get your account balances
-account_balance = client.getAccountBalance()
+account_balance = client.get_wallet_balances
 
 # get your trading balances
-trading_balance = client.getTradingBalance()
+trading_balance = client.get_spot_trading_balances
 
 # move balance from account bank to account trading
-result = client.transferMoneyFromBankToExchange('ETH', '3.2')
+result = @client.transfer_between_wallet_and_exchange(
+  currency: "CRO",
+  amount: "0.1",
+  source:"wallet",
+  destination:"spot",
+)
 
 # get your active orders
-orders = client.getActiveOrders('EOSETH')
+orders = client.get_all_active_spot_orders('EOSETH')
 
 # create a new order
-order = client.createOrder('EOSETH', 'buy', '10', order_type=args.ORDER_TYPE.MARKET)
+order = client.create_spot_order(
+  symbol:'EOSETH',
+  side:'buy',
+  quantity:'10',
+  order_type:args.ORDER_TYPE.MARKET
+)
 ```
 
 ## websocket client
-
-All websocket calls work with callbacks, subscriptions also use a callback with one argument for the subscription feed. All the other callbacks takes two arguments, err and result: callback(err, result). If the transaction is successful err is None and the result is in result. If the transaction fails, result is None and the error is in err.
-
-callbacks are callables like Procs
-
-There are three websocket clients, the PublicClient, the TradingClient and the AccountClient.
-
-```ruby
-require "cryptomarket-sdk"
-
-# THE PUBLIC CLIENT
-
-wsclient = Cryptomarket::Websocket::PublicClient.new
-
-wsclient.connect() # blocks until connected
-
-my_callback = Proc.new {|err, data|
-    if not err.nil?
-        puts err # deal with error
-        return
-    end
-    puts data
-}
-
-# get currencies
-wsclient.getCurrencies(my_callback)
-
-
-# get an order book feed, 
-# feed_callback is for the subscription feed, with one argument
-# result_callback is for the subscription result (success or failure)
-feed_callback = Proc.new {|feed|
-    puts feed
-}
-
-wsclient.subscribeToOrderbook('EOSETH', feed_callback, my_callback)
-
-# THE TRADING CLIENT
-
-wsclient = Cryptomarket::Websocket::TradingClient.new apiKey:apiKey, apiSecret:apiSecret
-
-wsclient.connect() # blocks until connected and authenticated.
-
-# get your trading balances
-wsclient.getTradingBalance(my_callback)
-
-# get your active orders
-wsclient.getActinveOrders(my_callback)
-
-# create a new order
-wsclient.create_order(
-    clientOrderId:"123123",
-    symbol:'EOSETH', 
-    side:'buy', 
-    quantity:"10",
-    price:"10",
-    callback:my_callback)
-
-# THE ACCONUT CLIENT
-
-wsclient = Cryptomarket::Websocket::AccountClient apiKey:apiKey, apiSecret:apiSecret
-
-wsclient.connect() # blocks until connected
-
-wsclient.getAccountBalance(my_callback)
-```
-
+*work in progress*
 
 ## exception handling
 ```ruby
@@ -120,10 +64,10 @@ require "cryptomarket-sdk"
 
 client = Cryptomarket::Client.new apiKey:apiKey, apiSecret:apiSecret
 
-# catch a wrong argument 
+# catch a wrong argument
 begin
-    order = client.create_order(
-        symbol='EOSETH', 
+    order = client.create_spot_order(
+        symbol='EOSETH',
         side='selllll', # wrong
         quantity='3'
     )
@@ -133,10 +77,10 @@ end
 
 # catch a failed transaction
 begin
-    order = client.create_order(
+    order = client.create_spot_order(
         symbol='eosehtt',  # non existant symbol
         side='sell',
-        quantity='10', 
+        quantity='10',
     )
 rescue Cryptomarket::SDKException => e:
     puts e
@@ -153,7 +97,7 @@ my_callback = Proc.new {|err, data|
     puts data
 }
 
-wsclient.getTradingBalance(my_callback)
+wsclient.get_spot_trading_balances(my_callback)
 
 # catch authorization error
 # to catch an authorization error on client connection, a on_error function must be defined on the client
@@ -170,5 +114,6 @@ wsclient.connect
 [java sdk](https://github.com/cryptomkt/cryptomkt-java)
 
 [go sdk](https://github.com/cryptomkt/cryptomkt-go)
+yptomkt/cryptomkt-python)
 
-[python sdk](https://github.com/cryptomkt/cryptomkt-python)
+[python sdk](https://github.com/cr
