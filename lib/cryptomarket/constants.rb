@@ -106,12 +106,20 @@ module Cryptomarket
       ID = 'id'
     end
 
+    module Contingency
+      ALL_OR_NONE = 'allOrNone'
+      AON = 'allOrNone'
+      ONE_CANCEL_OTHER = 'oneCancelOther'
+      OCO = 'oneCancelOther'
+      ONE_TRIGGER_ONE_CANCEL_OTHER = 'oneTriggerOneCancelOther'
+      OTOCO = 'oneTriggerOneCancelOther'
+    end
 
-    module AirdropStatus
-      AVAILABLE = 'available'
-      CLAIMED = 'claimed'
-      PENDING = 'pending'
-      COMITTED = 'comitted'
+    module NotificationType
+      SNAPSHOT = 'snapshot'
+      UPDATE = 'update'
+      DATA = 'data'
+      COMMAND = 'command'
     end
   end
 end
